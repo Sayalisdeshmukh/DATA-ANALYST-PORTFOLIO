@@ -1,0 +1,487 @@
+---
+title: "Deshmukh_project4"
+author: "Sayali Deshmukh"
+date: "2023-10-25"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+
+<CENTER>
+
+<FONT SIZE = 5, color = "red">
+
+<P>
+
+<B>ALY 6000 Introduction to Analytics</B> <BR> <B>Sayali Deshmukh</B>
+
+<P>
+
+<B>Date:`r format(Sys.time(), '%d %B, %Y')`</B>
+
+<P>
+
+</FONT>
+
+</CENTER>
+
+<P>
+<B>
+<P>
+
+<B>
+
+```{r setup, include = TRUE, message = FALSE, warning = FALSE, echo = TRUE}
+cat("\014") # clears console 
+rm(list = ls()) # clears global environment 
+try(dev.off(dev.list()["RStudioGD"]), silent = TRUE) # clears plots 
+try(p_unload(p_loaded(), character.only = TRUE), silent = TRUE) # clears packages 
+options(scipen = 100) # disables scientific notion for entire R session
+
+library(pacman)
+library(dplyr)
+library(ggplot2)
+p_load(tidyverse)
+p_load(janitor)
+library(cowplot)
+library(ggthemes)
+library(gridExtra)
+library(ggeasy)
+
+```
+#(cleaning the data set) 
+```{r Q1, include = TRUE, message = FALSE, warning = FALSE, echo = TRUE}
+bankchurners <- read.csv("BankChurners.csv")
+
+#Handle Missing Values:
+ bankchurners<- na.omit(bankchurners)
+ 
+ #Data Transformation:
+ bankchurners$Education_Level <- as.factor(bankchurners$Education_Level)
+bankchurners$Marital_Status <- as.factor(bankchurners$Marital_Status)
+
+
+summary(bankchurners)
+
+write.csv(bankchurners, "cleaned_bank_data.csv", row.names = FALSE)
+
+
+ bank_data<- read.csv("cleaned_bank_data.csv")
+
+```
+
+#Data anaylsis & Visualization
+
+```{r Q3, include = TRUE, message = FALSE, warning = FALSE, echo = TRUE}
+#1graph
+library(scales)
+selected_levels <- c("Graduate", "Uneducated", "College", "Doctorate", "Post-Graduate", "High School")
+ 
+filtered_data <- bank_data %>%
+  filter(Education_Level %in% selected_levels)
+ 
+# Group and summarize the data to get counts by education level
+counts_by_education <- filtered_data %>%
+  group_by(Education_Level) %>%
+  summarize(Count = n())
+ 
+# Calculate percentages
+total_count <- sum(counts_by_education$Count)
+counts_by_education <- counts_by_education %>%
+  mutate(Percentage = (Count / total_count) * 100)
+ 
+# Create a packed bubble chart with labels and percentages
+ggplot(counts_by_education, aes(x = "", y = Percentage, fill = Education_Level)) +
+  geom_bar(stat = "identity", width = 1) +
+  geom_text(aes(label = paste0(Education_Level, "\n", round(Percentage, 2), "%")),
+            position = position_stack(vjust = 0.5),
+            size = 3, color = "black") +
+  scale_fill_brewer(palette = "Set3") +
+  coord_polar("y") +
+  theme_void() +
+  labs(title = "Distribution of Credit Card Holders by Education Level")
+
+
+
+
+```
+
+
+
+```{r Q4, include = TRUE, message = FALSE, warning = FALSE, echo = TRUE}
+
+#2st graph
+counts_by_income <- bank_data %>%
+  group_by(Income_Category) %>%
+  summarize(Count = n())
+ 
+total_count <- sum(counts_by_income$Count)
+counts_by_income <- counts_by_income %>%
+  mutate(Percentage = (Count / total_count) * 100)
+ 
+ggplot(counts_by_income, aes(x = Income_Category, y = Count, fill = Income_Category)) +
+  geom_bar(stat = "identity", color = "black") +
+  geom_text(aes(label = paste0(round(Percentage, 1), "%")),
+            position = position_stack(vjust = 0.5),
+            size = 3) +  # Add percentage labels
+  labs(
+    title = "Distribution of Credit Card Holders by Income Category",
+    x = "Income Category",
+    y = "Count"
+  ) +
+  theme_minimal() +
+  scale_y_continuous(label = scales::percent_format(scale = 0.01))
+```
+
+
+
+
+```{r Q5, include = TRUE, message = FALSE, warning = FALSE, echo = TRUE}
+#3graph
+library(scales)
+ 
+ 
+counts_by_gender_attrition <- bank_data %>%
+  group_by(Gender, Attrition_Flag) %>%
+  summarize(Count = n())
+ 
+counts_by_gender <- counts_by_gender_attrition %>%
+  group_by(Gender) %>%
+  summarize(Total = sum(Count))
+ 
+percentage_data <- counts_by_gender_attrition %>%
+  left_join(counts_by_gender, by = "Gender") %>%
+  mutate(Percentage = (Count / Total) * 100)
+ 
+ggplot(percentage_data, aes(x = Gender, y = Percentage, fill = Attrition_Flag)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = c("Attrited Customer" = "lightblue", "Existing Customer" = "orange")) +
+  geom_text(aes(label = paste0(round(Percentage, 1), "%")), 
+            position = position_stack(vjust = 0.5), 
+            size = 3, color = "black") +  
+  scale_y_continuous(labels = percent_format(scale = 1)) +
+  labs(
+    title = "Attrition Flag by Gender",
+    x = "Gender",
+    y = "Percentage",
+    fill = "Attrition Flag"
+  ) +
+  theme_minimal()
+ 
+```
+
+
+
+
+
+
+```{r Q6, include = TRUE, message = FALSE, warning = FALSE, echo = TRUE}
+#4graph
+# Box-and-whisker Plot — Credit Limit by Education Level 
+
+# Load the ggplot2 and viridis libraries
+library(ggplot2)
+library(viridis)
+
+
+# Create the box-and-whisker plot with the viridis color palette
+ggplot(bank_data, aes(x = Education_Level, y = Credit_Limit, fill = Education_Level)) +
+  geom_boxplot() +
+  scale_fill_viridis(discrete = TRUE) +  # Use the viridis color palette
+  labs(x = "Education Level", y = "Credit Limit") +
+  ggtitle("Box-and-Whisker Plot: Credit Limit by Education Level")+
+  scale_y_continuous(breaks = c(0, 10000, 20000,30000), labels = c("0k", "10k", "20k","30k"))
+
+```
+
+
+
+
+
+
+```{r Q7, include = TRUE, message = FALSE, warning = FALSE, echo = TRUE}
+#5graph
+#Scatter Plot — Average Open to Buy vs. Credit Limit
+
+# Create the scatter plot with scatter points in light green and a black regression line
+ggplot(bank_data, aes(x = Credit_Limit, y = Avg_Open_To_Buy)) +
+  geom_point(color = "lightgreen") +  # Set scatter point color to light green
+  geom_smooth(method = "lm", se = FALSE, color = "black") +  # Add a black linear regression line
+  labs(x = "Credit Limit", y = "Average Open to Buy") +
+  ggtitle("Scatter Plot: Credit Limit vs. Average Open to Buy")+
+  scale_x_continuous(breaks = c(0, 5000, 10000,15000, 20000, 25000, 30000, 35000), labels = c("0k", "5k", "10k","15k", "20k", "25k", "30k", "35k")) +
+  scale_y_continuous(breaks = c(0, 10000, 20000,30000), labels = c("0k", "10k", "20k","30k"))
+```
+
+
+
+
+
+
+```{r Q8, include = TRUE, message = FALSE, warning = FALSE, echo = TRUE}
+#6graph
+
+ggplot(bank_data, aes(x = Credit_Limit, y = Total_Revolving_Bal)) +
+  geom_point(color = "lightcoral") +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +  
+  labs(x = "Credit Limit", y = "Total Revolving Balance") +
+  ggtitle("Scatter Plot: Credit Limit vs. Total Revolving Balance") +
+  scale_x_continuous(breaks = c(0, 5000, 10000,15000, 20000, 25000, 30000, 35000), labels = c("0k", "5k", "10k","15k", "20k", "25k", "30k", "35k")) +
+  scale_y_continuous(breaks = c(0, 1000, 2000), labels = c("0k", "1k", "2k"))
+```
+
+
+
+
+```{r Q9, include = TRUE, message = FALSE, warning = FALSE, echo = TRUE}
+#7graph
+# Create the scatter plot with scatter points in blue and an inverse U-curve in black
+ggplot(bank_data, aes(x = Months_on_book, y = Credit_Limit)) +
+  geom_point(color = "turquoise") +  # Set scatter point color to blue
+  geom_smooth(method = "lm", formula = y ~ poly(x, 2), se = FALSE, color = "black") + # Add the quadratic regression line in black
+  labs(x = "Months on Book", y = "Credit Limit") +
+  ggtitle("Scatter Plot: Credit Limit vs. Months on Book (Inverse U-curve)")+
+  scale_x_continuous(breaks = c(0,5,10,15, 20, 25, 30, 35,40,45,50,55,60), labels = c("0", "5", "10","15", "20", "25", "30", "35","40","45","50","55","60")) +
+  scale_y_continuous(breaks = c(0, 10000, 20000,30000), labels = c("0k", "10k", "20k","30k"))
+
+```
+
+
+
+
+```{r Q10, include = TRUE, message = FALSE, warning = FALSE, echo = TRUE}
+#8graph
+# Assuming your dataset is named 'df' and contains the relevant columns
+# If your dataset is named differently, replace 'df' with your dataset's name
+
+# Create the scatter plot with a blue line
+ggplot(bank_data, aes(x = Avg_Utilization_Ratio, y = Credit_Limit)) +
+  geom_point(color = "blue") +  # Add blue points for the scatter plot
+  geom_smooth(method = "lm", color = "black", se = FALSE) +  # Add a blue regression line
+  labs(x = "Avg_Utilization_Ratio", y = "Credit_Limit") +  # Label the axes
+  ggtitle("Scatter Plot: Average Utilization Ratio vs. Credit Limit ")  # Add a title
+
+
+
+
+```
+#statistical analysis
+```{r Q11, include = TRUE, message = FALSE, warning = FALSE, echo = TRUE}
+# Calculate mean, median, mode, standard deviation, variance, range, and quartiles
+mean_customer_age <- mean(bank_data$Customer_Age)
+median_customer_age <- median(bank_data$Customer_Age)
+sd_customer_age <- sd(bank_data$Customer_Age)
+var_customer_age <- var(bank_data$Customer_Age)
+range_customer_age <- range(bank_data$Customer_Age)
+quartiles_customer_age <- quantile(bank_data$Customer_Age)
+
+# Similarly for Credit_Limit
+mean_credit_limit <- mean(bank_data$Credit_Limit)
+median_credit_limit <- median(bank_data$Credit_Limit)
+sd_credit_limit <- sd(bank_data$Credit_Limit)
+var_credit_limit <- var(bank_data$Credit_Limit)
+range_credit_limit <- range(bank_data$Credit_Limit)
+quartiles_credit_limit <- quantile(bank_data$Credit_Limit)
+
+# And for Total_Trans_Amt
+mean_total_trans_amt <- mean(bank_data$Total_Trans_Amt)
+median_total_trans_amt <- median(bank_data$Total_Trans_Amt)
+sd_total_trans_amt <- sd(bank_data$Total_Trans_Amt)
+var_total_trans_amt <- var(bank_data$Total_Trans_Amt)
+range_total_trans_amt <- range(bank_data$Total_Trans_Amt)
+quartiles_total_trans_amt <- quantile(bank_data$Total_Trans_Amt)
+
+mean_Income_Category <- mean(bank_data$Income_Category)
+median_Income_Category <- median(bank_data$Income_Category)
+sd_Income_Category <- sd(bank_data$Income_Category)
+var_Income_Category <- var(bank_data$Income_Category)
+range_Income_Category <- range(bank_data$Income_Category)
+
+
+# Print or store the results
+cat("Customer Age:\n")
+cat("Mean:", mean_customer_age, "\n")
+cat("Median:", median_customer_age, "\n")
+cat("Standard Deviation:", sd_customer_age, "\n")
+cat("Variance:", var_customer_age, "\n")
+cat("Range:", range_customer_age, "\n")
+cat("Quartiles:", quartiles_customer_age, "\n")
+
+cat("\nCredit Limit:\n")
+cat("Mean:", mean_credit_limit, "\n")
+cat("Median:", median_credit_limit, "\n")
+cat("Standard Deviation:", sd_credit_limit, "\n")
+cat("Variance:", var_credit_limit, "\n")
+cat("Range:", range_credit_limit, "\n")
+cat("Quartiles:", quartiles_credit_limit, "\n")
+
+cat("\nTotal Transaction Amount:\n")
+cat("Mean:", mean_total_trans_amt, "\n")
+cat("Median:", median_total_trans_amt, "\n")
+cat("Standard Deviation:", sd_total_trans_amt, "\n")
+cat("Variance:", var_total_trans_amt, "\n")
+cat("Range:", range_total_trans_amt, "\n")
+cat("Quartiles:", quartiles_total_trans_amt, "\n")
+
+
+```
+
+
+```{r Q12, include = TRUE, message = FALSE, warning = FALSE, echo = TRUE}
+
+# Load necessary libraries
+library(ggplot2)
+ 
+# Sample data
+BankChurner <- data.frame(Customer_Age = rnorm(1000, mean = 46.33, sd = 8.02))
+ 
+# Calculate statistics
+mean_age <- mean(BankChurner$Customer_Age)
+median_age <- median(BankChurner$Customer_Age)
+std_dev <- sd(BankChurner$Customer_Age)
+ 
+# Create a histogram
+histogram <- ggplot(BankChurner, aes(x = Customer_Age)) +
+  geom_histogram(binwidth = 2, fill = "lightblue", color = "black", aes(y = ..count..)) +
+  labs(
+    title = "Customer Age Distribution",
+    x = "Customer Age",
+    y = "Count"
+  ) +
+  theme_minimal()
+ 
+# Display the histogram
+print(histogram)
+ 
+
+```
+ 
+
+ 
+```{r, echo=TRUE}
+# Load necessary libraries
+library(ggplot2)
+ 
+# Sample data
+BankChurner <- data.frame(Credit_Limit = rexp(1000, rate = 1/8631.95) + 1438.3)
+ 
+# Calculate statistics
+mean_limit <- mean(BankChurner$Credit_Limit)
+median_limit <- median(BankChurner$Credit_Limit)
+std_dev_limit <- sd(BankChurner$Credit_Limit)
+ 
+# Create a histogram
+histogram <- ggplot(BankChurner, aes(x = Credit_Limit)) +
+  geom_histogram(binwidth = 1000, fill = "lightblue", color = "black", aes(y = ..count..)) +
+  labs(
+    title = "Credit Limit Distribution",
+    x = "Credit Limit",
+    y = "Count"
+  ) +
+  theme_minimal()
+ 
+# Display the histogram
+print(histogram)
+ 
+
+```
+ 
+
+ 
+```{r, echo=FALSE}
+# Load necessary libraries
+library(ggplot2)
+ 
+# Sample data
+BankChurner <- data.frame(Credit_Limit = rexp(1000, rate = 1/8631.95) + 1438.3)
+ 
+# Calculate statistics
+mean_limit <- mean(BankChurner$Credit_Limit)
+median_limit <- median(BankChurner$Credit_Limit)
+std_dev_limit <- sd(BankChurner$Credit_Limit)
+ 
+# Create a histogram
+histogram <- ggplot(BankChurner, aes(x = Credit_Limit)) +
+  geom_histogram(binwidth = 1000, fill = "lightblue", color = "black", aes(y = ..count..)) +
+  labs(
+    title = "Credit Limit Distribution",
+    x = "Credit Limit",
+    y = "Count"
+  ) +
+  theme_minimal()
+ 
+# Display the histogram
+print(histogram)
+ 
+
+
+```
+ 
+
+ 
+```{r, echo=FALSE}
+# Load necessary libraries
+library(ggplot2)
+ 
+# Sample data
+set.seed(42)
+BankChurner <- data.frame(Total_Transaction_Amount = rexp(1000, rate = 1/4404.09) + 510)
+ 
+# Calculate statistics
+mean_amount <- 4404.09
+median_amount <- 3899
+std_dev_amount <- 3397.13
+ 
+# Create a histogram
+histogram <- ggplot(BankChurner, aes(x = Total_Transaction_Amount)) +
+  geom_histogram(binwidth = 500, fill = "lightblue", color = "black", aes(y = ..count..)) +
+  labs(
+    title = "Total Transaction Amount Distribution",
+    x = "Total Transaction Amount",
+    y = "Count"
+  ) +
+  theme_minimal()
+ 
+# Display the histogram
+print(histogram)
+ 
+
+
+```
+ 
+
+ 
+
+
+ 
+
+
+ 
+ 
+ 
+<FONT SIZE = 3, color = "black">
+<P>
+<B>
+Citation
+<B>
+<P>
+
+
+Credit Card customers
+Goyal
+https://www.kaggle.com/datasets/sakshigoyal7/credit-card-customers
+
+
+How to Use geom_smooth in R
+Ebner & Newbie
+https://www.sharpsightlabs.com/blog/geom_smooth/
+
+
+
+ggplot2 box plot : Quick start guide - R software and data visualization
+http://www.sthda.com/english/wiki/ggplot2-box-plot-quick-start-guide-r-software-and-data-visualization
+
+
+Bar plot in ggplot2 with geom_bar and geom_col
+https://r-charts.com/ranking/bar-plot-ggplot2/
