@@ -1,4 +1,5 @@
 Welcome to My Portfolio
+
 I am a skilled data professional with expertise in Python, R, SQL, Power BI, Tableau, and advanced data science tools such as Pandas, Scikit-learn, and TensorFlow.
 I specialize in transforming raw data into actionable insights through techniques like dashboard creation, machine learning, and statistical analysis.
 This portfolio showcases my ability to analyze large datasets, build predictive models, and create interactive dashboards that drive data-driven business decisions. 
