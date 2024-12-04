@@ -1,14 +1,23 @@
 Supply Chain Data Analysis
+
 This repository contains an analysis of a supply chain dataset aimed at optimizing delivery processes and improving efficiency. The analysis includes data preprocessing, statistical analysis, predictive modeling, clustering, and time-series forecasting.
 
 Key Features
 Data Preprocessing: Handling missing values, date formatting, and creating new features like "Shipping Delay" to evaluate delivery performance.
+
 Statistical Analysis: Includes Chi-Square and ANOVA tests to understand the relationships between shipping modes, delivery risk, and other supply chain metrics.
+
 Predictive Modeling: Implements Logistic Regression, Ridge Regression, and Lasso Regression to predict delivery risks and optimize delivery performance.
+
 Clustering: KMeans clustering for segmenting customers based on sales, benefit per order, and shipping delays.
+
 Feature Importance: Random Forest Classifier used to determine the most influential features impacting delivery performance.
+
 PCA: Principal Component Analysis (PCA) for dimensionality reduction and visualizing the dataset in lower dimensions.
+
 Time-Series Forecasting: ARIMA model applied to forecast sales per customer and predict future trends.
+
+
 Requirements
 pandas
 numpy
@@ -21,6 +30,7 @@ To install the necessary dependencies, run the following command:
 bash
 Copy code
 pip install pandas numpy scikit-learn seaborn matplotlib statsmodels
+
 Dataset
 The analysis uses a supply chain dataset with various features related to customer sales, order details, and delivery status. A sample dataset (CSV format) is expected to be available for analysis, containing columns such as Sales per customer, Benefit per order, Days for shipping (real), Days for shipment (scheduled), and Shipping Mode.
 
