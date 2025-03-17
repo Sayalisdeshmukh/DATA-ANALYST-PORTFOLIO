@@ -46,20 +46,32 @@ Before running the project, make sure you have Python 3.x installed. You can dow
 
 The analysis generates several visualizations to help understand the data and insights:
 
-Correlation Heatmap: Visualizes the relationships between key supply chain variables.
-Shipping Delay vs Late Delivery Risk: A boxplot showing how shipping delays affect the risk of late deliveries.
-KMeans Clustering: Visualizes the customer segmentation based on sales and benefit metrics.
-PCA Projection: A reduced dimensionality representation of customer clusters.
-Confusion Matrix: For evaluating the logistic regression model's performance.
-Error Distribution: A comparison of Ridge vs Lasso regression model errors.
+# Correlation Heatmap:  
+Visualizes the relationships between key supply chain variables.
+# Shipping Delay vs Late Delivery Risk:
+A boxplot showing how shipping delays affect the risk of late deliveries.
+# KMeans Clustering: 
+Visualizes the customer segmentation based on sales and benefit metrics.
+# PCA Projection: 
+A reduced dimensionality representation of customer clusters.
+# Confusion Matrix: 
+For evaluating the logistic regression model's performance.
+# Error Distribution:
+A comparison of Ridge vs Lasso regression model errors.
 
 ## Statistical Tests and Models
-Chi-square Test: A test to determine the relationship between categorical variables like category and late delivery risk.
-ANOVA Test: Used to check whether there is a significant difference in shipping times across categories.
-Logistic Regression: For predicting the likelihood of late deliveries based on several input features. The model's performance is evaluated using precision, recall, and F1-score.
-Ridge and Lasso Regression: These are used to predict the continuous variable Shipping Delay, with evaluation based on RMSE (Root Mean Squared Error).
-KMeans Clustering: Segments customers into clusters based on sales and benefit per order.
-ARIMA Forecasting: Forecasts future sales per customer based on historical data.
+# Chi-square Test:
+A test to determine the relationship between categorical variables like category and late delivery risk.
+# ANOVA Test:
+Used to check whether there is a significant difference in shipping times across categories.
+# Logistic Regression: 
+For predicting the likelihood of late deliveries based on several input features. The model's performance is evaluated using precision, recall, and F1-score.
+# Ridge and Lasso Regression: 
+These are used to predict the continuous variable Shipping Delay, with evaluation based on RMSE (Root Mean Squared Error).
+# KMeans Clustering: 
+Segments customers into clusters based on sales and benefit per order.
+# ARIMA Forecasting:
+Forecasts future sales per customer based on historical data.
 
 ## Code Explanation
 Data Preprocessing
@@ -69,17 +81,7 @@ Converting date columns to datetime format.
 Filling missing values in categorical columns (like Order Zipcode) with the mode.
 Filling missing values in numerical columns (like Days for Shipping) with the median value.
 Creating a new feature, Shipping Delay, by calculating the difference between the actual shipping time and scheduled shipping time.
-Statistical Analysis
-Chi-Square Test: Used to determine the association between category and late delivery risk.
-ANOVA Test: Used to check whether there is a significant difference in shipping times across categories.
-Predictive Modeling
-Logistic Regression: Used to predict whether a delivery will be late based on several input features. The model's performance is evaluated using precision, recall, and F1-score.
-Ridge and Lasso Regression: These are used to predict the continuous variable Shipping Delay, with evaluation based on RMSE (Root Mean Squared Error).
-Clustering and PCA
-KMeans Clustering: Used to segment customers based on sales and benefit per order.
-PCA: Reduces the dimensionality of the dataset and provides a clear visualization of customer clusters in 2D space.
-Forecasting with ARIMA
-The ARIMA model is used to predict future sales per customer, with results showing the trend and seasonal patterns in customer purchasing behavior.
+
 
 ## Results and Insights
 Shipping Delay was found to be the most important factor in predicting late deliveries. Strategies should focus on minimizing shipping delays.
@@ -92,7 +94,8 @@ ARIMA Forecasting predicted a decrease in future sales per customer, suggesting 
 Focus on optimizing shipping processes to reduce delays, especially for high-risk shipping modes.
 Use predictive models to proactively manage late deliveries and shipping delays.
 Explore customer segments identified through clustering for tailored marketing and operational strategies.
-License
+
+## License
 This project is licensed under the MIT License.
 
 ## Contributing
