@@ -16,7 +16,7 @@ This project demonstrates text analysis and classification using Natural Languag
 - `README.md`: This file, which explains the project.
 
 ## Requirements
-To run this project, you'll need Python 3.x and the following libraries:
+To run this project, we need Python 3.x and the following libraries:
 - `nltk`
 - `sklearn`
 - `pandas`
@@ -31,10 +31,10 @@ To run this project, you'll need Python 3.x and the following libraries:
 - Naive Bayes Classification: A simple Naive Bayes classifier is used for binary classification of sentences in the text.
 
 - Results: The predictions are saved in a CSV file (text_classification_nlp_outpu.csv).
-You can install the required libraries using `pip`:
+  we can install the required libraries using `pip`:
 
 ## Future Improvements
-Model Enhancement: You can experiment with different classification algorithms and compare their performance.
+Model Enhancement: we can experiment with different classification algorithms and compare their performance.
 Text Preprocessing: Additional preprocessing steps like stemming, lemmatization, and removing special characters can be applied to improve the model.
 Larger Dataset: This project could be extended to handle larger datasets and different texts.
 
