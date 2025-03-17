@@ -26,4 +26,24 @@ You can install the required libraries using `pip`:
 ```bash
 pip install -r requirements.txt
 
+Project Workflow
+Download NLTK data: The notebook automatically downloads the necessary datasets for tokenization and text processing.
+
+Text preprocessing: The text from Emma by Jane Austen is tokenized into words and sentences.
+
+Bag of Words (BoW): A BoW model is created using the CountVectorizer to convert text data into a numerical format suitable for machine learning.
+
+Naive Bayes Classification: A simple Naive Bayes classifier is used for binary classification of sentences in the text.
+
+Results: The predictions are saved in a CSV file (nlp_assignment_output.csv).
+
+
+Future Improvements
+Model Enhancement: You can experiment with different classification algorithms and compare their performance.
+Text Preprocessing: Additional preprocessing steps like stemming, lemmatization, and removing special characters can be applied to improve the model.
+Larger Dataset: This project could be extended to handle larger datasets and different texts.
+
+License
+This project is licensed under the MIT License - see the LICENSE file for details.
+
 
