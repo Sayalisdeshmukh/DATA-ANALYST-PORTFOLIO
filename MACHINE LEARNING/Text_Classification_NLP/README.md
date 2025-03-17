@@ -21,11 +21,6 @@ To run this project, you'll need Python 3.x and the following libraries:
 - `sklearn`
 - `pandas`
 
-You can install the required libraries using `pip`:
-
-```bash
-pip install -r requirements.txt
-
 ## Project Workflow
 - Download NLTK data: The notebook automatically downloads the necessary datasets for tokenization and text processing.
 
@@ -36,14 +31,22 @@ pip install -r requirements.txt
 - Naive Bayes Classification: A simple Naive Bayes classifier is used for binary classification of sentences in the text.
 
 - Results: The predictions are saved in a CSV file (text_classification_nlp_outpu.csv).
-
+You can install the required libraries using `pip`:
 
 ## Future Improvements
 Model Enhancement: You can experiment with different classification algorithms and compare their performance.
 Text Preprocessing: Additional preprocessing steps like stemming, lemmatization, and removing special characters can be applied to improve the model.
 Larger Dataset: This project could be extended to handle larger datasets and different texts.
 
+
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+
+
+
+
+
+
 
 
