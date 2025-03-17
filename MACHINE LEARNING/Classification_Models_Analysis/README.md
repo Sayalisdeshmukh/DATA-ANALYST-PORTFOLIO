@@ -19,7 +19,7 @@ This project demonstrates the use of various machine learning models to perform 
    ```
 3. Open the Jupyter notebook:
    ```bash
-   jupyter notebook Deshmukh_assignment5 (1).ipynb
+   jupyter notebook Classification_Models_Analysis.ipynb
    ```
 
 ## Results
