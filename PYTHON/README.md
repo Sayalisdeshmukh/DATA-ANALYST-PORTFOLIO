@@ -46,31 +46,31 @@ Before running the project, make sure you have Python 3.x installed. You can dow
 
 The analysis generates several visualizations to help understand the data and insights:
 
-# Correlation Heatmap:  
+## Correlation Heatmap:  
 Visualizes the relationships between key supply chain variables.
-# Shipping Delay vs Late Delivery Risk:
+## Shipping Delay vs Late Delivery Risk:
 A boxplot showing how shipping delays affect the risk of late deliveries.
-# KMeans Clustering: 
+## KMeans Clustering: 
 Visualizes the customer segmentation based on sales and benefit metrics.
-# PCA Projection: 
+## PCA Projection: 
 A reduced dimensionality representation of customer clusters.
-# Confusion Matrix: 
+## Confusion Matrix: 
 For evaluating the logistic regression model's performance.
-# Error Distribution:
+## Error Distribution:
 A comparison of Ridge vs Lasso regression model errors.
 
 ## Statistical Tests and Models
-# Chi-square Test:
+## Chi-square Test:
 A test to determine the relationship between categorical variables like category and late delivery risk.
-# ANOVA Test:
+## ANOVA Test:
 Used to check whether there is a significant difference in shipping times across categories.
-# Logistic Regression: 
+## Logistic Regression: 
 For predicting the likelihood of late deliveries based on several input features. The model's performance is evaluated using precision, recall, and F1-score.
-# Ridge and Lasso Regression: 
+## Ridge and Lasso Regression: 
 These are used to predict the continuous variable Shipping Delay, with evaluation based on RMSE (Root Mean Squared Error).
-# KMeans Clustering: 
+## KMeans Clustering: 
 Segments customers into clusters based on sales and benefit per order.
-# ARIMA Forecasting:
+## ARIMA Forecasting:
 Forecasts future sales per customer based on historical data.
 
 ## Code Explanation
