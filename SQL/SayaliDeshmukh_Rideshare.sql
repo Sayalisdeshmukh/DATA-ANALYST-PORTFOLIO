@@ -271,4 +271,5 @@ LIMIT 1;
 #Most Expensive Ride (Maximum Price):
 SELECT *
 FROM ride_joint
+	
 WHERE price = (SELECT MAX(price) FROM ride_joint);
