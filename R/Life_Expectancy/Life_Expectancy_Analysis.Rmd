@@ -1,0 +1,459 @@
+---
+title: "Deshmukh_Final_project_Milestone1"
+author: "Sayali Deshmukh"
+date: "2023-11-18"
+output: html_document
+---
+
+```{r setup2, include = FALSE, message = FALSE, warning = FALSE, echo = FALSE}
+cat("\014") # clears console 
+rm(list = ls()) # clears global environment 
+try(dev.off(dev.list()["RStudioGD"]), silent = TRUE) # clears plots 
+try(p_unload(p_loaded(), character.only = TRUE), silent = TRUE) # clears packages 
+options(scipen = 100) # disables scientific notion for entire R session
+
+library(pacman)
+library(testthat)
+library(dplyr)
+
+library(janitor)
+library(lubridate)
+
+library(ggplot2)
+library(ggthemes)
+library(ggeasy)
+library(psych)
+```
+
+
+```{r Q1, include = TRUE, message = FALSE, warning = FALSE, echo = TRUE}
+health_data <- read.csv("Life Expectancy Data.csv")
+
+```
+
+
+```{r Q2, include = TRUE, message = FALSE, warning = FALSE, echo = TRUE}
+# Load necessary libraries
+library(tidyverse)
+
+# Impute missing values with the median for numerical columns
+numerical_columns <- names( health_data%>% select_if(is.numeric))
+
+for (column in numerical_columns) {
+  health_data[[column]] <- ifelse(is.na(health_data[[column]]), median(health_data[[column]], na.rm = TRUE), health_data[[column]])
+}
+
+# Check if all missing values are filled
+missing_values_after <- colSums(is.na(health_data))
+
+# Print the result
+print(missing_values_after)
+
+```
+
+
+```{r Q3, include = TRUE, message = FALSE, warning = FALSE, echo = TRUE}
+
+
+#  Summary statistics for key numerical fields
+
+Adult.Mortality_summary<-describe(health_data$Adult.Mortality)
+Alcohol_summary<-describe(health_data$Alcohol)
+Life.expectancy_summary<-describe(health_data$Life.expectancy)
+infant.deaths_summary<-describe(health_data$infant.deaths)
+percentage.expenditure_summary<-describe(health_data$percentage.expenditure)
+
+
+
+# Print the results
+cat("Descriptive Statistics -Adult.Mortality_summary \n")
+print(Adult.Mortality_summary)
+
+cat("\nDescriptive Statistics -Alcohol_summary \n")
+print(Alcohol_summary)
+
+cat("\nDescriptive Statistics -Life.expectancy_summary \n")
+print(Life.expectancy_summary)
+
+cat("\nDescriptive Statistics -infant.deaths_summary \n")
+print(infant.deaths_summary)
+
+cat("\nDescriptive Statistics -percentage.expenditure_summary\n")
+print(percentage.expenditure_summary)
+
+# Group by Country and calculate descriptive statistics
+country_descriptive_stats <- health_data %>%
+  group_by(Country) %>%
+  summarize(
+    Mean_Life_Expectancy = mean(`Life.expectancy`),
+    Median_Life_Expectancy = median(`Life.expectancy`),
+    SD_Life_Expectancy = sd(`Life.expectancy`),
+    Min_Life_Expectancy = min(`Life.expectancy`),
+    Max_Life_Expectancy = max(`Life.expectancy`)
+  )
+
+ headtail(country_descriptive_stats,5)
+
+# Print the result
+print(country_descriptive_stats)
+```
+
+```{r Q4, include = TRUE, message = FALSE, warning = FALSE, echo = TRUE}
+
+# Group by Country and calculate descriptive statistics for Infant.Deaths
+infant_deaths_descriptive_stats <-  health_data %>%
+  group_by(Country) %>%
+  summarize(
+    Mean_Infant_Deaths = mean(`infant.deaths`),
+    Median_Infant_Deaths = median(`infant.deaths`),
+    SD_Infant_Deaths = sd(`infant.deaths`),
+    Min_Infant_Deaths = min(`infant.deaths`),
+    Max_Infant_Deaths = max(`infant.deaths`)
+  )
+headtail(infant_deaths_descriptive_stats,5)
+# Print the result
+print(infant_deaths_descriptive_stats)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r Q5, include = TRUE, message = FALSE, warning = FALSE, echo = TRUE}
+
+# Remove leading and trailing spaces from column names
+colnames(health_data) <- str_trim(colnames(health_data))
+
+#  a histogram for Life Expectancy
+hist_data <- health_data$`Life.expectancy`
+
+# Plot the histogram
+hist(hist_data, breaks = 30, col = "skyblue", border = "black", main = "Histogram of Life Expectancy across all countries",
+     xlab = "Life Expectancy", ylab = "Frequency")
+     # Extract relevant data
+data_2015 <- subset(health_data, Year == 2015)
+developing_life_expectancy <- data_2015[data_2015$Status == "Developing", "Life.expectancy"]
+developed_life_expectancy <- data_2015[data_2015$Status == "Developed", "Life.expectancy"]
+
+```
+
+```{r Q6, include = TRUE, message = FALSE, warning = FALSE, echo = TRUE}
+# Two-sample t-test
+test_result <- t.test(developing_life_expectancy, developed_life_expectancy)
+
+# Print the results
+print(test_result)
+
+
+
+# Extract relevant data
+data_2000 <- subset(health_data, Year == 2000 & Status == "Developing")$Alcohol
+data_2015 <- subset(health_data, Year == 2015 & Status == "Developing")$Alcohol
+
+# Paired-sample t-test
+t_test_result <- t.test(data_2000, data_2015, paired = TRUE)
+
+# Print the results
+print(t_test_result)
+
+
+
+# Extract relevant data
+data_2010 <- subset(health_data, Year == 2010)$under.five.deaths
+data_2015 <- subset(health_data, Year == 2015)$under.five.deaths
+
+# Paired-sample t-test
+test3_result <- t.test(data_2010, data_2015, paired = TRUE)
+
+# Print the results
+print(test3_result)
+
+
+
+# Extract relevant data
+data_2015 <- subset(health_data, Year == 2015)
+developing_bmi <- data_2015[data_2015$Status == "Developing", "BMI"]
+developed_bmi <- data_2015[data_2015$Status == "Developed", "BMI"]
+
+# Two-sample t-test
+test4_result <- t.test(developing_bmi, developed_bmi)
+
+# Print the results
+print(test4_result)
+
+```
+
+
+
+```{r Q7, include = TRUE, message = FALSE, warning = FALSE, echo = TRUE}
+#  a bar chart for the average Adult Mortality rate by country status
+avg_mortality_by_status <- aggregate(health_data$`Adult.Mortality`, by = list(health_data$Status), FUN = mean)
+
+# Rename the columns for clarity
+colnames(avg_mortality_by_status) <- c("Status", "AverageAdultMortality")
+
+# Plot the bar chart
+bar_colors <- c("blue", "green")
+barplot(height = avg_mortality_by_status$AverageAdultMortality, names.arg = avg_mortality_by_status$Status,
+        col = bar_colors, main = "Average Adult Mortality Rate by Country Status",
+        xlab = "Country Status", ylab = "Average Adult Mortality Rate", border = "black")
+
+# Add title, labels, and rotate x-axis labels
+title("Average Adult Mortality Rate by Country Status")
+#axis(side = 1, at = seq_along(avg_mortality_by_status$Status), labels = avg_mortality_by_status$Status, las = 1)
+
+```
+
+
+```{r Q8, include = TRUE, message = FALSE, warning = FALSE, echo = TRUE}
+# a scatter plot of GDP against Life Expectancy
+ggplot(health_data, aes(x = GDP, y = `Life.expectancy`)) +
+  geom_point(alpha = 0.5) +
+  scale_x_log10() +  # Using a log scale for better visualization
+  labs(title = 'Scatter plot of GDP against Life Expectancy',
+       x = 'GDP in USD',
+       y = 'Life Expectancy') +
+  theme_minimal()
+
+```
+
+
+
+```{r Q9, include = TRUE, message = FALSE, warning = FALSE, echo = TRUE}
+
+
+# a line chart for the average Alcohol consumption over the years
+avg_alcohol_by_year <- aggregate(health_data$Alcohol, by = list(health_data$Year), FUN = mean)
+
+# Rename the columns for clarity
+colnames(avg_alcohol_by_year) <- c("Year", "AverageAlcoholConsumption")
+
+# Plot the line chart
+plt <- ggplot(avg_alcohol_by_year, aes(x = Year, y = AverageAlcoholConsumption)) +
+  geom_line(color = "blue", size = 1) +
+  geom_point(color = "blue", size = 3, shape = 19) +
+  labs(title = "Average Alcohol Consumption Over the Years",
+       x = "Year",
+       y = "Average Alcohol Consumption per capita (litres)") +
+  theme_minimal()
+
+print(plt)
+
+```
+
+```{r Q10, include = TRUE, message = FALSE, warning = FALSE, echo = TRUE}
+# Load necessary libraries
+library(ggplot2)
+
+library(reshape2)
+
+# Select numeric columns from the dataset
+numeric_data <- health_data[sapply(health_data, is.numeric)]
+
+# Calculate the correlation matrix
+corr <- cor(numeric_data)
+
+#  a heatmap
+ggplot(melt(corr), aes(Var1, Var2, fill = value)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+                       midpoint = 0, limit = c(-1,1), space = "Lab", 
+                       name="Correlation") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, size = 10, hjust = 1)) +
+  coord_fixed()
+```
+
+```{r Q11, include = TRUE, message = FALSE, warning = FALSE, echo = TRUE}
+# Boxplot of BMI by Country Status
+ggplot(health_data, aes(x = Status, y = BMI)) +
+  geom_boxplot(fill = "skyblue", color = "black") +
+  labs(title = "Boxplot of BMI by Country Status",
+       x = "Country Status",
+       y = "BMI") +
+  theme_minimal()
+
+
+
+
+```
+#FINAL PROJECT CODE 
+
+```{r Q12, include = TRUE, message = FALSE, warning = FALSE, echo = TRUE}
+
+#correlation analysis
+
+# Select relevant numeric columns for correlation analysis
+numeric_columns <- c('Life.expectancy', 'Adult.Mortality', 'infant.deaths', 'Alcohol', 'percentage.expenditure',
+                     'Hepatitis.B', 'Measles', 'BMI', 'under.five.deaths', 'Polio', 'Total.expenditure',
+                     'Diphtheria', 'HIV.AIDS', 'GDP', 'Population', 'thinness..1.19.years', 'thinness.5.9.years',
+                     'Income.composition.of.resources', 'Schooling')
+
+# Calculate correlation coefficients
+correlation_matrix <- cor(health_data[, numeric_columns])
+
+# Print the correlation matrix
+print(correlation_matrix)
+
+
+
+```
+
+
+
+
+
+```{r Q13, include = TRUE, message = FALSE, warning = FALSE, echo = TRUE}
+
+# Scatterplot
+plot(health_data$GDP, health_data$Life.expectancy, main = "Scatterplot of GDP vs. Life Expectancy",
+     xlab = "GDP", ylab = "Life Expectancy")
+
+# Linear Regression
+model <- lm(Life.expectancy ~ GDP, data = health_data)
+summary(model)
+
+# Hypothesis Testing
+# H0: The coefficient for GDP is not significantly different from zero.
+# H1: The coefficient for GDP is significantly different from zero.
+summary(model)$coefficients
+
+# Additional information about the hypothesis test
+# p-value less than the significance level (e.g., 0.05) suggests rejecting the null hypothesis
+
+
+```
+
+
+```{r Q14, include = TRUE, message = FALSE, warning = FALSE, echo = TRUE}
+
+# Scatterplot
+plot(health_data$Schooling, health_data$infant.deaths, main = "Scatterplot of Schooling vs. Infant Mortality",
+     xlab = "Schooling", ylab = "Infant Mortality")
+
+# Linear Regression
+model <- lm(infant.deaths ~ Schooling, data = health_data)
+summary(model)
+
+# Hypothesis Testing
+# H0: The coefficient for Schooling is not significantly different from zero.
+# H1: The coefficient for Schooling is significantly different from zero.
+summary(model)$coefficients
+
+# Additional information about the hypothesis test
+# p-value less than the significance level (e.g., 0.05) suggests rejecting the null hypothesis
+
+
+
+```
+
+
+```{r Q15, include = TRUE, message = FALSE, warning = FALSE, echo = TRUE}
+
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(car)
+
+# Perform multiple regression analysis
+model <- lm(Life.expectancy ~ BMI + Alcohol + Income.composition.of.resources, data = health_data)
+
+# Summary of the regression model
+summary(model)
+
+# Check overall significance of the model
+anova(model)
+
+# Examine individual significance of each independent variable
+summary(model)
+
+# Check the goodness of fit for the model
+par(mfrow = c(2, 2))
+plot(model)
+
+# Optionally, you can also check for multicollinearity
+vif(model)
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Box plot for Alcohol
+boxplot(health_data$Alcohol, main = "Box Plot of Alcohol Consumption", ylab = "Alcohol Consumption")
+
+# Box plot for BMI
+boxplot(health_data$BMI, main = "Box Plot of BMI", ylab = "BMI")
+
+
+
+
+
+
+# Calculate IQR for Alcohol
+IQR_Alcohol <- IQR(health_data$Alcohol, na.rm = TRUE)
+
+# Calculate lower and upper bounds for potential outliers in Alcohol
+lower_bound_Alcohol <- quantile(health_data$Alcohol, na.rm = TRUE)[2] - 1.5 * IQR_Alcohol
+upper_bound_Alcohol <- quantile(health_data$Alcohol, na.rm = TRUE)[4] + 1.5 * IQR_Alcohol
+
+# Identify potential outliers in Alcohol
+outliers_Alcohol <- health_data$Alcohol < lower_bound_Alcohol | health_data$Alcohol > upper_bound_Alcohol
+
+# Print the indices of potential outliers in Alcohol
+cat("Potential outliers in Alcohol at indices:", which(outliers_Alcohol), "\n")
+
+# Repeat the process for BMI
+IQR_BMI <- IQR(health_data$BMI, na.rm = TRUE)
+lower_bound_BMI <- quantile(health_data$BMI, na.rm = TRUE)[2] - 1.5 * IQR_BMI
+upper_bound_BMI <- quantile(health_data$BMI, na.rm = TRUE)[4] + 1.5 * IQR_BMI
+outliers_BMI <- health_data$BMI < lower_bound_BMI | health_data$BMI > upper_bound_BMI
+
+# Print the indices of potential outliers in BMI
+cat("Potential outliers in BMI at indices:", which(outliers_BMI), "\n")
+
+
+
+```
+```{r Q16, include = TRUE, message = FALSE, warning = FALSE, echo = TRUE}
+
+# Scatterplot
+plot(health_data$GDP, health_data$Life.expectancy, 
+     main = "Scatterplot of GDP vs. Life Expectancy",
+     xlab = "GDP", ylab = "Life Expectancy")
+
+# Linear Regression
+model <- lm(Life.expectancy ~ GDP, data = health_data)
+
+# Add Linear Regression Line
+abline(model, col = "blue")
+
+# Display the plot
+
+# Scatterplot
+plot(health_data$Schooling, health_data$BMI, 
+     main = "Scatterplot of Schooling vs. BMI",
+     xlab = "Schooling", ylab = "BMI")
+
+# Add Regression Line
+abline(lm(BMI ~ Schooling, data = health_data), col = "blue")
+
+ 
+```
